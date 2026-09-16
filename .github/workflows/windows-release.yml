@@ -2,8 +2,18 @@ name: Windows release
 
 on:
   push:
+    branches:
+      - main
+    paths:
+      - package.json
+      - .github/workflows/windows-release.yml
     tags:
       - "v*"
+  workflow_dispatch:
+
+concurrency:
+  group: windows-release
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -25,12 +35,27 @@ jobs:
         run: npx tsc --noEmit
       - name: Build installer
         run: npm run desktop:dist
+      - name: Verify installer and calculate checksum
+        shell: pwsh
+        run: |
+          $installer = Get-Item -LiteralPath "outputs/windows/noctysstartbook.exe"
+          if ($installer.Length -lt 1MB) { throw "Installer is incomplete" }
+          $hash = (Get-FileHash -LiteralPath $installer.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  noctysstartbook.exe" | Set-Content -LiteralPath "outputs/windows/SHA256SUMS.txt" -Encoding ascii
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          gh release create "${{ github.ref_name }}" `
-            "outputs/windows/noctysstartbook.exe" `
-            --title "NOCTYS HQ ${{ github.ref_name }}" `
-            --generate-notes
+          $version = (Get-Content -LiteralPath package.json -Raw | ConvertFrom-Json).version
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Invalid release version" }
+          $tag = "v$version"
+          if ($env:GITHUB_REF_TYPE -eq 'tag' -and $env:GITHUB_REF_NAME -ne $tag) { throw "Tag and package version differ" }
+          gh release view $tag --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $tag "outputs/windows/noctysstartbook.exe" "outputs/windows/SHA256SUMS.txt" --clobber --repo $env:GITHUB_REPOSITORY
+          } else {
+            gh release create $tag "outputs/windows/noctysstartbook.exe" "outputs/windows/SHA256SUMS.txt" `
+              --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "NOCTYS HQ $tag" --generate-notes --latest
+          }
+          if ($LASTEXITCODE -ne 0) { throw "Release publication failed" }

@@ -2,12 +2,13 @@
 
 État actuel : NOCTYS HQ conserve les comptes et fiches dans Supabase et transfère les `.dem` vers le bucket privé Supabase `team-files`. Aucun stockage R2, B2 ou serveur Windows n’est encore connecté. Sur un projet Supabase **Free**, la taille globale maximale est de **50 Mo par fichier** et le stockage inclus est de **1 Go**. Le plafond de 500 Mio indiqué par l’application ne relève pas ces limites côté serveur.
 
-Deux voies possibles :
+Trois voies possibles :
 
 | Solution | Usage adapté | Conséquence pour NOCTYS |
 |---|---|---|
 | Supabase Pro | Déploiement le plus rapide, volume modéré | Passer le projet en Pro, relever la limite globale Storage, ajuster la limite applicative ; 100 Go de stockage inclus puis facturation au-delà. Vérifier aussi les frais de téléchargement. |
 | Stockage d’objets séparé (Cloudflare R2 recommandé pour beaucoup de téléchargements) | Démos très lourdes et bibliothèque volumineuse | Conserver Auth et les métadonnées dans Supabase, déplacer les fichiers vers un bucket R2 privé. L’application doit être adaptée ; la création du bucket seule ne suffit pas. |
+| Serveur de votre ami | Disques disponibles, bonne connexion montante, maintenance assurée | Conserver Supabase pour les comptes et fiches ; héberger les fichiers sur ses disques. Voir le [plan pour le serveur de l’ami](SERVEUR-DEMOS.md). |
 
 Pour R2, la conception prévue est : l’utilisateur se connecte via Supabase Auth ; un service vérifie son jeton et ses droits NOCTYS ; ce service délivre des URL temporaires d’envoi ou de téléchargement ; l’application transfère les démos directement par parties vers R2 ; une fiche Supabase enregistre la clé d’objet, la taille et les informations de review. Seuls les membres actifs lisent les fichiers, et seuls coach/analyste déposent les démos macro. Les clés R2 restent uniquement dans le service, jamais dans l’exécutable ni dans Git. Prévoir une sauvegarde des objets indépendante et une politique de conservation (par exemple archiver les démos anciennes).
 

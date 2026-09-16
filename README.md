@@ -6,7 +6,7 @@ Application CS2 pour NOCTYS : préparation collective, entraînement individuel,
 
 Lancer `outputs/windows/noctysstartbook.exe`, puis ouvrir **NOCTYS HQ** depuis le raccourci. Les joueurs n’ont besoin ni de Node.js ni d’un navigateur ou serveur à démarrer. Electron embarque l’interface et la sert sur une adresse 127.0.0.1 aléatoire accessible uniquement sur le PC. Internet est requis pour les comptes et données communes. Voir [installation](INSTALLATION.md), [utilisation](UTILISATION.md), [administration Supabase](ADMINISTRATION-SUPABASE.md) et [stockage des grosses démos](STOCKAGE-DEMOS.md).
 
-L’installateur est non signé : aucun certificat éditeur n’a été fourni. Les mises à jour automatiques ne sont pas configurées. Les exécutables et fichiers personnels sont exclus des commits Git ; le workflow de Release publie l’installateur en asset GitHub après un tag `v*`. Voir [publication GitHub](PUBLICATION-GITHUB.md).
+L’installateur est non signé : aucun certificat éditeur n’a été fourni. Les mises à jour automatiques ne sont pas configurées. Les exécutables et fichiers personnels sont exclus des commits Git ; le workflow de Release publie l’installateur et son SHA-256 dans les [Releases GitHub](https://github.com/younesh95/noctyteamhub/releases). Voir [publication GitHub](PUBLICATION-GITHUB.md).
 
 ## Activation Supabase
 
@@ -25,6 +25,8 @@ Les comptes confirment leur email puis le staff valide leur rôle dans **Gérer 
 Supabase existant sert de serveur commun, sans PC d’équipe toujours allumé. Transfert TUS par blocs de 6 Mio, progression, tentatives automatiques et pause/reprise dans la fenêtre ouverte. Le transfert continue pendant le changement d’onglet. Fermer l’application interrompt le transfert ; la reprise après fermeture n’est pas implémentée. Si le fichier est transféré mais la fiche échoue, un bouton permet de réessayer sa publication.
 
 Limite applicative : 500 Mio. La limite globale du projet prime ; sur le plan Supabase Free, elle ne peut pas dépasser 50 Mo par fichier selon la [documentation Supabase](https://supabase.com/docs/guides/storage/uploads/file-limits). Aucune offre payante n’est activée automatiquement. Prévoir une sauvegarde séparée des objets Storage, en plus de la base de données.
+
+Pour utiliser les disques d’un serveur existant, voir [la proposition d’hébergement chez votre ami](SERVEUR-DEMOS.md). Cette connexion externe reste à développer et à déployer ; elle n’est pas incluse dans la version 0.2.2.
 
 ## Pool et Tactical board
 
@@ -85,5 +87,5 @@ L’administrateur confirme que l’application démarre dans sa session Windows
 
 L’installateur NSIS est généré et son contenu embarqué contrôlé. L’administrateur a confirmé le démarrage depuis sa session Windows. Les essais natifs de l’agent dans son environnement isolé ne reflètent pas ce lancement utilisateur.
 
-Version 0.2.2 : validation des nouveaux membres dans l’application et installateur nommé `noctysstartbook.exe`. Le journal minimal de démarrage `startup.log` reste dans le profil Windows, sans secret ni URL. Le code source est préparé dans la copie Git `work/noctys-release` pour publication sur le dépôt NOCTYS ; voir [publication GitHub](PUBLICATION-GITHUB.md).
+Version 0.2.2 : validation des nouveaux membres dans l’application et installateur nommé `noctysstartbook.exe`. Le journal minimal de démarrage `startup.log` reste dans le profil Windows, sans secret ni URL. Voir [publication GitHub](PUBLICATION-GITHUB.md) pour générer et distribuer l’installateur.
 
