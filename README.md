@@ -85,5 +85,5 @@ L’administrateur confirme que l’application démarre dans sa session Windows
 
 L’installateur NSIS est généré et son contenu embarqué contrôlé. L’administrateur a confirmé le démarrage depuis sa session Windows. Les essais natifs de l’agent dans son environnement isolé ne reflètent pas ce lancement utilisateur.
 
-Version 0.2.2 : validation des nouveaux membres dans l’application et installateur nommé `noctysstartbook.exe`. Le journal minimal de démarrage `startup.log` reste dans le profil Windows, sans secret ni URL. Le code source doit être commité puis poussé sur le dépôt GitHub de l’équipe ; aucun remote n’est configuré dans cette copie locale.
+Version 0.2.2 : validation des nouveaux membres dans l’application et installateur nommé `noctysstartbook.exe`. Le journal minimal de démarrage `startup.log` reste dans le profil Windows, sans secret ni URL. Le code source est préparé dans la copie Git `work/noctys-release` pour publication sur le dépôt NOCTYS ; voir [publication GitHub](PUBLICATION-GITHUB.md).
 
