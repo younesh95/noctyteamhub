@@ -27,22 +27,8 @@ Si vous possèdez déjà Nextcloud, créer un espace partagé privé NOCTYS avec
 
 Cette variante s’utilise d’abord dans Nextcloud et demande des comptes Nextcloud distincts. Elle ne connecte pas automatiquement l’onglet Demo analyzer ni la session Supabase. Une intégration WebDAV dans NOCTYS constituerait un travail supplémentaire. Éviter de synchroniser toute la bibliothèque sur les neuf PC si les joueurs n’ont besoin que de quelques matchs.
 
-## Dimensionnement
 
-| Point à vérifier avec votre ami | Pourquoi |
-|---|---|
-| Linux, Windows ou NAS ; Docker disponible ; accès administrateur | Détermine le mode d’installation et de maintenance |
-| Capacité libre et disque dédié aux données | La place dépend du volume réellement conservé, plus les transferts en cours |
-| Débit **montant** du serveur et éventuel quota de trafic | C’est ce débit qui sert les téléchargements des joueurs |
-| Adresse publique, domaine et possibilité de servir en HTTPS | Les PC des neuf membres doivent pouvoir atteindre le service ; vérifier notamment le CGNAT |
-| Disponibilité du serveur | S’il est éteint ou hors ligne, les fiches restent visibles mais les fichiers sont indisponibles |
-| Sauvegarde sur un autre disque ou une autre machine | Le RAID seul ne protège pas d’une suppression ou d’une panne générale |
 
-Exemple de capacité : 20 démos de 1 Go par semaine conservées 12 semaines occupent environ 240 Go, hors sauvegarde, espace temporaire et marge. Prévoir la capacité à partir de vos volumes ; un disque de 1 ou 2 To peut être un point de départ si ce volume vous correspond.
-
-Exemple de réseau : neuf téléchargements complets d’une démo de 1 Go représentent environ 9 Go à envoyer. À 100 Mbit/s disponibles, le minimum théorique cumulé est de 12 minutes ; en pratique, les autres usages et les connexions des joueurs augmentent cette durée.
-
-Les frais dépendent du matériel déjà présent, de l’électricité, des sauvegardes et de l’offre Internet ou d’hébergement de votre ami. Cette solution évite un abonnement de stockage supplémentaire si ces ressources suffisent, mais elle nécessite quelqu’un pour assurer les mises à jour et la maintenance.
 
 ## Mise en service après vérification du serveur
 
