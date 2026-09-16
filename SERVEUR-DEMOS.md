@@ -1,4 +1,4 @@
-# Démos sur le serveur de votre ami
+# Démos sur server
 
 Cette solution est proposée pour NOCTYS et ses neuf membres. **Aucun serveur externe n’est encore installé ni connecté à NOCTYS HQ 0.2.2.** La version actuelle envoie les fichiers dans Supabase Storage. Changer une URL dans Supabase ne suffit pas à déplacer les démos.
 
