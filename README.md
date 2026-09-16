@@ -4,7 +4,7 @@ Application CS2 pour NOCTYS : préparation collective, entraînement individuel,
 
 ## Installation
 
-Lancer `outputs/windows/noctysstartbook.exe`, puis ouvrir **NOCTYS HQ** depuis le raccourci. Les joueurs n’ont besoin ni de Node.js ni d’un navigateur ou serveur à démarrer. Electron embarque l’interface et la sert sur une adresse 127.0.0.1 aléatoire accessible uniquement sur le PC. Internet est requis pour les comptes et données communes. Voir [installation](INSTALLATION.md), [utilisation](UTILISATION.md), [administration Supabase](ADMINISTRATION-SUPABASE.md) et [stockage des grosses démos](STOCKAGE-DEMOS.md).
+Télécharger [noctysstartbook.exe — Windows x64](https://github.com/younesh95/noctyteamhub/releases/latest/download/noctysstartbook.exe), lancer l’assistant puis ouvrir **NOCTYS HQ** depuis le raccourci. Une copie locale est disponible dans `outputs/windows/noctysstartbook.exe`. Les joueurs n’ont besoin ni de Node.js ni d’un navigateur ou serveur à démarrer. Electron embarque l’interface et la sert sur une adresse 127.0.0.1 aléatoire accessible uniquement sur le PC. Internet est requis pour les comptes et données communes. Voir [installation](INSTALLATION.md), [utilisation](UTILISATION.md), [administration Supabase](ADMINISTRATION-SUPABASE.md) et [stockage des grosses démos](STOCKAGE-DEMOS.md).
 
 L’installateur est non signé : aucun certificat éditeur n’a été fourni. Les mises à jour automatiques ne sont pas configurées. Les exécutables et fichiers personnels sont exclus des commits Git ; le workflow de Release publie l’installateur et son SHA-256 dans les [Releases GitHub](https://github.com/younesh95/noctyteamhub/releases). Voir [publication GitHub](PUBLICATION-GITHUB.md).
 

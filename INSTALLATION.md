@@ -1,6 +1,6 @@
 # Installer NOCTYS HQ sur Windows
 
-Télécharger `noctysstartbook.exe` depuis les **Releases GitHub** du projet, une fois le dépôt publié, puis l’ouvrir. Une copie locale est produite dans `outputs/windows/noctysstartbook.exe`. L’assistant propose un dossier d’installation et crée un raccourci **NOCTYS HQ**. L’application fonctionne sur Windows x64 et nécessite une connexion internet pour accéder au compte, aux données communes et à FACEIT. Node.js et un navigateur ne sont pas nécessaires pour les joueurs.
+Télécharger [noctysstartbook.exe](https://github.com/younesh95/noctyteamhub/releases/latest/download/noctysstartbook.exe) depuis la [Release GitHub du projet](https://github.com/younesh95/noctyteamhub/releases/latest), puis l’ouvrir. Une copie locale est produite dans `outputs/windows/noctysstartbook.exe`. L’assistant propose un dossier d’installation et crée un raccourci **NOCTYS HQ**. L’application fonctionne sur Windows x64 et nécessite une connexion internet pour accéder au compte, aux données communes et à FACEIT. Node.js et un navigateur ne sont pas nécessaires pour les joueurs.
 
 L’installateur n’est pas signé avec un certificat éditeur. Windows peut donc afficher un avertissement SmartScreen. Vérifier que le fichier provient bien de la Release du dépôt NOCTYS ; ne pas installer un fichier reçu d’une source inconnue.
 
