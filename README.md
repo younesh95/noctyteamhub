@@ -26,7 +26,7 @@ Supabase existant sert de serveur commun, sans PC d’équipe toujours allumé. 
 
 Limite applicative : 500 Mio. La limite globale du projet prime ; sur le plan Supabase Free, elle ne peut pas dépasser 50 Mo par fichier selon la [documentation Supabase](https://supabase.com/docs/guides/storage/uploads/file-limits). Aucune offre payante n’est activée automatiquement. Prévoir une sauvegarde séparée des objets Storage, en plus de la base de données.
 
-Pour utiliser les disques d’un serveur existant, voir [la proposition d’hébergement chez votre ami](SERVEUR-DEMOS.md). Cette connexion externe reste à développer et à déployer ; elle n’est pas incluse dans la version 0.2.2.
+Pour utiliser les disques d’un serveur existant, voir [manuel externe](SERVEUR-DEMOS.md). Cette connexion externe reste à développer et à déployer ; elle n’est pas incluse dans la version 0.2.2.
 
 ## Pool et Tactical board
 
