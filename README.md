@@ -30,7 +30,7 @@ Pour utiliser les disques d’un serveur existant, voir [manuel externe](SERVEUR
 
 ## Pool et Tactical board
 
-Pool demandé par NOCTYS : **Dust2, Mirage, Anubis, Cache, Ancient, Nuke, Inferno**. Centralisé dans `lib/domain/model.ts`. Les anciennes valeurs Dust II sont normalisées à la lecture ; les archives des maps sorties du pool sont conservées.
+Maps: **Dust2, Mirage, Anubis, Cache, Ancient, Nuke, Inferno**. Centralisé dans `lib/domain/model.ts`. Les anciennes valeurs Dust II sont normalisées à la lecture ; les archives des maps sorties du pool sont conservées.
 
 **Macro → Tactical board** : fonds radar embarqués, niveau inférieur de Nuke, joueurs, flèches de déplacement, dessin libre, smoke/flash/molotov/HE, texte, couleurs et timing 2:15 → 0:05. Déplacement et effacement des objets, annuler/rétablir, zoom, sauvegarde collective, exports JSON et image SVG autonome avec radar. Les joueurs consultent ; coach et analyste éditent. La dernière sauvegarde reçue remplace la précédente : pas de fusion de coédition simultanée.
 
