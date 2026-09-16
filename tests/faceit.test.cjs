@@ -1,0 +1,10 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm'),ts=require('typescript');
+const {allowedPath,errorMessage}=require('../desktop/faceit-policy.cjs');
+const context={exports:{}};vm.runInNewContext(ts.transpileModule(fs.readFileSync('features/faceit/client.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,context);const {summarize,teamId}=context.exports;
+test('FACEIT bridge only accepts public supported endpoints',()=>{assert(allowedPath('/players?nickname=war0zen'));assert(allowedPath('/players/abc/history?game=cs2&offset=20&limit=20'));assert(allowedPath('/teams/55a41dee-2ee2-4b0e-ba54-40222cd45ec5/stats/cs2'));for(const path of ['https://evil.example','//evil.example','/players/../admin','/players/x/history?game=cs2&offset=0&limit=999','/players?nickname=x&url=https://evil.example','/matches/x/../../admin'])assert.equal(allowedPath(path),false,path)});
+test('missing metrics are not fabricated zeroes',()=>{const s=summarize({});assert.equal(s.kd,null);assert.equal(s.hs,null);assert.equal(s.win,null)});
+test('available FACEIT metrics drive explicit review recommendations',()=>{const s=summarize({'Average K/D Ratio':'0.85','Average Headshots %':'35','Win Rate %':'42','Matches':'100'});assert.equal(s.matches,100);assert.equal(s.axes.length,3);assert.equal(s.kd,.85)});
+test('invalid FACEIT numbers remain unknown',()=>assert.equal(summarize({'K/D Ratio':'not a number'}).kd,null));
+test('team link and id resolve identically',()=>{const id='55a41dee-2ee2-4b0e-ba54-40222cd45ec5';assert.equal(teamId(id),id);assert.equal(teamId('https://www.faceit.com/fr/teams/'+id+'/leagues'),id);assert.throws(()=>teamId('not a team'))});
+test('rate limits have a useful error',()=>assert.match(errorMessage(429),/minute/));
