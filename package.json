@@ -14,7 +14,7 @@
     "db:generate": "drizzle-kit generate",
     "desktop:build": "vite build --config desktop/vite.config.mts",
     "desktop:start": "electron .",
-    "desktop:dist": "npm run desktop:build && node desktop/stage.mjs && electron-builder --win nsis --x64",
+    "desktop:dist": "npm run desktop:build && node desktop/stage.mjs && electron-builder --win nsis --x64 --publish never",
     "test": "node --test tests/*.test.cjs && node tests/database.mjs"
   },
   "dependencies": {
