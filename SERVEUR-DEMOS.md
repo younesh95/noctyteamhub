@@ -23,7 +23,7 @@ L’intégration à développer comprend le choix du fournisseur de stockage dan
 
 ## Variante disponible plus rapidement : Nextcloud
 
-Si votre ami possède déjà Nextcloud, créer un espace partagé privé NOCTYS avec neuf comptes individuels et des droits d’écriture réservés au staff permet de commencer à échanger des démos. Le client de synchronisation Nextcloud transfère les gros fichiers par morceaux. L’administrateur doit prévoir les limites de son serveur web, les quotas et l’espace temporaire.
+Si vous possèdez déjà Nextcloud, créer un espace partagé privé NOCTYS avec neuf comptes individuels et des droits d’écriture réservés au staff permet de commencer à échanger des démos. Le client de synchronisation Nextcloud transfère les gros fichiers par morceaux. L’administrateur doit prévoir les limites de son serveur web, les quotas et l’espace temporaire.
 
 Cette variante s’utilise d’abord dans Nextcloud et demande des comptes Nextcloud distincts. Elle ne connecte pas automatiquement l’onglet Demo analyzer ni la session Supabase. Une intégration WebDAV dans NOCTYS constituerait un travail supplémentaire. Éviter de synchroniser toute la bibliothèque sur les neuf PC si les joueurs n’ont besoin que de quelques matchs.
 
