@@ -1,0 +1,235 @@
+.board.board-with-radar {
+  height: auto;
+  aspect-ratio: 1;
+  background: #090e16;
+  isolation: isolate;
+  max-width: 850px;
+  margin: auto;
+}
+.board-radar-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: -1;
+}
+.board-with-radar .board-point {
+  z-index: 1;
+}
+.veto-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 22px;
+  align-items: start;
+}
+.veto-layout h2 {
+  margin: 12px 0 22px;
+}
+.veto-layout details {
+  margin: 20px 0;
+}
+.veto-layout summary {
+  cursor: pointer;
+  color: #c6a3f3;
+}
+.veto-step {
+  display: grid;
+  grid-template-columns: 25px 1fr 100px;
+  gap: 10px;
+  align-items: center;
+}
+.veto-step select {
+  margin: 4px 0;
+}
+.veto-turn {
+  border: 1px solid #775496;
+  background: linear-gradient(110deg, #3a2252, #171825);
+  padding: 22px;
+  border-radius: 10px;
+  margin: 22px 0;
+  color: #ead9ff;
+  font-weight: 600;
+}
+.veto-maps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.veto-maps button {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 14px;
+  gap: 8px;
+  background: #141723;
+  text-align: center;
+}
+.veto-maps img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  opacity: 0.85;
+}
+.veto-maps small {
+  font-size: 10px;
+  padding: 0 4px;
+  color: #b9a6ca;
+}
+.veto-maps button.ban {
+  border-color: #82444c;
+}
+.veto-maps button.ban img {
+  filter: grayscale(1);
+  opacity: 0.3;
+}
+.veto-maps button.pick {
+  border-color: #5ba58e;
+}
+.veto-maps button:disabled {
+  opacity: 0.8;
+}
+.veto-history {
+  padding-left: 22px;
+}
+.veto-history li {
+  padding: 10px 0;
+  border-bottom: 1px solid #33283e;
+}
+.veto-history span,
+.veto-history strong {
+  display: block;
+  font-size: 12px;
+}
+.veto-history span {
+  color: #a79bad;
+  margin-bottom: 5px;
+}
+.saved-veto {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  text-align: left;
+}
+.veto-profiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.veto-profiles section {
+  border: 1px solid #443250;
+  border-radius: 10px;
+  padding: 16px;
+  background: #18131f;
+  min-width: 0;
+}
+.veto-ranking h4 {
+  margin: 18px 0 10px;
+  color: #c8b4dd;
+  font-size: 13px;
+}
+.veto-rank {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  margin: 5px 0;
+}
+.veto-rank span {
+  flex: 1;
+  font-size: 13px;
+}
+.veto-rank button {
+  padding: 5px 9px;
+}
+.veto-history small {
+  display: block;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+.roster-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+.roster-grid > div {
+  border: 1px solid #3b2d47;
+  padding: 16px;
+  border-radius: 9px;
+}
+.roster-account {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: #8e819b;
+  margin-top: 6px;
+}
+.team-call {
+  margin-bottom: 24px;
+}
+.team-call iframe {
+  display: block;
+  width: 100%;
+  height: 65vh;
+  min-height: 400px;
+  border: 1px solid #473455;
+  border-radius: 12px;
+  margin-top: 18px;
+  background: #15151b;
+}
+.call-rooms {
+  margin: 20px 0;
+}
+.call-rooms > .row {
+  padding: 12px 0;
+  border-bottom: 1px solid #35293e;
+}
+.team-call.call-dock {
+  position: fixed;
+  right: 18px;
+  bottom: 16px;
+  width: 370px;
+  max-width: calc(100vw - 36px);
+  padding: 14px;
+  z-index: 60;
+  box-shadow: 0 12px 60px #000b;
+}
+.call-dock h3 {
+  font-size: 13px;
+  margin: 6px 0;
+}
+.call-dock iframe {
+  height: 220px;
+  min-height: 0;
+  margin-top: 8px;
+}
+.call-dock .fine {
+  font-size: 10px;
+}
+.call-dock button {
+  font-size: 11px;
+  padding: 8px;
+}
+@media (max-width: 1150px) {
+  .veto-layout {
+    grid-template-columns: 1fr;
+  }
+  .veto-maps {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .roster-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .veto-profiles {
+    grid-template-columns: 1fr;
+  }
+  .veto-maps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .roster-grid {
+    grid-template-columns: 1fr;
+  }
+}
