@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import '../features/preparation.css';
 import ConnectionGate from "../features/team/ConnectionGate";
 
 export const metadata: Metadata = {

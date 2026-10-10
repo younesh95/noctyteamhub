@@ -6,13 +6,15 @@ Application CS2 pour NOCTYS : préparation collective, entraînement individuel,
 
 Télécharger [noctysstartbook.exe — Windows x64](https://github.com/younesh95/noctyteamhub/releases/latest/download/noctysstartbook.exe), lancer l’assistant puis ouvrir **NOCTYS HQ** depuis le raccourci. Une copie locale est disponible dans `outputs/windows/noctysstartbook.exe`. Les joueurs n’ont besoin ni de Node.js ni d’un navigateur ou serveur à démarrer. Electron embarque l’interface et la sert sur une adresse 127.0.0.1 aléatoire accessible uniquement sur le PC. Internet est requis pour les comptes et données communes. Voir [installation](INSTALLATION.md), [utilisation](UTILISATION.md), [administration Supabase](ADMINISTRATION-SUPABASE.md) et [stockage des grosses démos](STOCKAGE-DEMOS.md).
 
-L’installateur est non signé : aucun certificat éditeur n’a été fourni. Les mises à jour automatiques ne sont pas configurées. Les exécutables et fichiers personnels sont exclus des commits Git ; le workflow de Release publie l’installateur et son SHA-256 dans les [Releases GitHub](https://github.com/younesh95/noctyteamhub/releases). Voir [publication GitHub](PUBLICATION-GITHUB.md).
+L’installateur est non signé : aucun certificat éditeur n’a été fourni. Les exécutables et fichiers personnels sont exclus des commits Git ; le workflow de Release publie l’installateur et son SHA-256 dans les [Releases GitHub](https://github.com/younesh95/noctyteamhub/releases). Voir [publication GitHub](PUBLICATION-GITHUB.md).
+
+Voir [les nouveautés et la notice du Stratpad 0.6.0](MISE-A-JOUR-0.6.0.md). Cette version ajoute aussi la recherche et le téléchargement de mises à jour vérifiées ; leur installation reste déclenchée par l’utilisateur. Pour un projet vierge, appliquer les migrations 001 à 005 dans l’ordre.
 
 ## Activation Supabase
 
 Depuis **0.5.0**, aucune adresse de projet, clé ou identité de membre n’est intégrée au code ni à l’installateur. Au premier lancement, importer le fichier de connexion remis en privé par le coach. Voir [la notice 0.5.0](MISE-A-JOUR-0.5.0.md). La clé publishable est une clé cliente ; Supabase Auth et les politiques RLS protègent les données.
 
-**Mise à jour 0.4.0 : exécuter une fois [004_administrator.sql](supabase/migrations/004_administrator.sql) dans le SQL Editor Supabase pour le nouveau rôle administrateur.** Le bot de veto utilise les sauvegardes de la migration 003 déjà appliquée. Pour un projet vierge, exécuter 001, 002, 003 puis 004. Ne pas réexécuter les migrations déjà installées. Aucun compte Auth n’est créé ou supprimé par ces migrations.
+**Mise à jour 0.4.0 : exécuter une fois [004_administrator.sql](supabase/migrations/004_administrator.sql) dans le SQL Editor Supabase pour le nouveau rôle administrateur.** Le bot de veto utilise les sauvegardes de la migration 003 déjà appliquée. Pour un projet vierge, exécuter 001, 002, 003, 004 puis 005. Ne pas réexécuter les migrations déjà installées. Aucun compte Auth n’est créé ou supprimé par ces migrations.
 
 Déployer aussi la fonction Edge `username-login` avec `verify_jwt=false` (voir `supabase/config.toml`). Les secrets de service restent dans Supabase. La connexion Windows appelle cette fonction depuis le processus principal. L’ancien aperçu web passe par `/api/login`.
 

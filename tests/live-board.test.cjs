@@ -1,0 +1,2 @@
+const {test}=require('node:test'),assert=require('node:assert/strict');const {validFrame}=require('../features/tactical/live-policy.mjs');
+test('live board rejects malformed frames and out-of-map cursors',()=>{const f={title:'Setup',time:115,plan:{map:'Mirage',side:'T',level:'upper',marks:[]}};assert(validFrame(f));assert(!validFrame({...f,cursor:{x:1001,y:0}}));assert(!validFrame({...f,plan:{...f.plan,map:'file:///etc/passwd'}}));assert(!validFrame({...f,time:NaN}));assert(!validFrame({...f,plan:{...f.plan,marks:[{tool:'Joueur',points:[]}]}}));});

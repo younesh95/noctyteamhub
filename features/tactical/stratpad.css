@@ -1,0 +1,132 @@
+.stratpad {
+  margin-top: 20px;
+  min-width: 0;
+}
+.stratpad-heading,
+.stratpad-tools,
+.stratpad-options,
+.stratpad-actions,
+.stratpad-transport {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.stratpad-heading {
+  justify-content: space-between;
+}
+.stratpad-heading h3 {
+  margin: 4px 0 16px;
+}
+.stratpad-tools {
+  padding: 12px;
+  background: #0c0b12;
+  border: 1px solid #30283f;
+  border-radius: 12px;
+}
+.stratpad button.on {
+  background: #61399b;
+  border-color: #b995ff;
+  color: white;
+}
+.stratpad-tools button {
+  font-size: 12px;
+  padding: 8px 10px;
+}
+.stratpad-options {
+  margin: 12px 0;
+  align-items: end;
+}
+.stratpad-options label {
+  display: grid;
+  gap: 4px;
+  font-size: 11px;
+  color: #b9adc9;
+}
+.stratpad-options input:not([type="color"]) {
+  width: 120px;
+}
+.stratpad-options input[type="color"] {
+  width: 48px;
+  height: 38px;
+  padding: 3px;
+}
+.stratpad-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 165px;
+  gap: 12px;
+}
+.stratpad-map {
+  overflow: auto;
+  max-height: 650px;
+  border: 1px solid #453557;
+  border-radius: 12px;
+  background: #10131b;
+}
+.stratpad-map svg {
+  display: block;
+  min-width: 100%;
+  touch-action: none;
+  user-select: none;
+}
+.stratpad-roster {
+  background: #100e18;
+  padding: 12px;
+  border-radius: 12px;
+  max-height: 650px;
+  overflow: auto;
+  font-size: 12px;
+}
+.stratpad-roster h4 {
+  margin: 0 0 10px;
+}
+.stratpad-roster > div {
+  border-bottom: 1px solid #30283f;
+  padding: 10px 0;
+}
+.stratpad-roster small {
+  display: block;
+  margin: 6px 0;
+  color: #ae9dc1;
+}
+.stratpad-roster .stratpad-key {
+  padding: 4px;
+  margin: 2px;
+  font-size: 11px;
+}
+.stratpad-inspector button {
+  font-size: 11px;
+  margin-top: 6px;
+}
+.stratpad-transport {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid #30283f;
+  border-radius: 12px;
+}
+.stratpad-transport > input {
+  flex: 1;
+  min-width: 100px;
+}
+.stratpad-transport label {
+  display: flex;
+  gap: 5px;
+  font-size: 12px;
+}
+.stratpad-transport label input {
+  width: auto;
+}
+.stratpad-actions {
+  margin-top: 14px;
+}
+@media (max-width: 800px) {
+  .stratpad-layout {
+    grid-template-columns: 1fr;
+  }
+  .stratpad-roster {
+    max-height: 180px;
+  }
+  .stratpad-transport > input {
+    flex-basis: 100%;
+  }
+}

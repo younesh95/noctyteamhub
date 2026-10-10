@@ -121,6 +121,7 @@ app
       server.listen(0, "127.0.0.1", resolve);
     });
     origin = "http://127.0.0.1:" + server.address().port;
+    await require('./updates.cjs')({app,shell,handler});
     handler("connection:get", () => connection);
     handler("connection:set", (value) => {
       const next = validateConnection(value);

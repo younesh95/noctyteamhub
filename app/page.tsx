@@ -2,10 +2,12 @@
 import { useEffect, useState } from "react";
 import FaceitSettings from "../features/faceit/Settings";
 import PasswordRecovery from "./password-recovery";
+import AccountRecovery from '../features/team/AccountRecovery';
 import { ArrowUpRight, Shield, Users, ChevronRight } from "lucide-react";
 import { api, auth } from "../lib/supabase";
 export default function Home() {
   const [recover, setRecover] = useState(false);
+  const [resetAccount,setResetAccount]=useState(false);
   useEffect(() => {
     const p = new URLSearchParams(location.hash.slice(1));
     if (p.get("type") === "recovery" || p.has("error_code")) setRecover(true);
@@ -34,6 +36,7 @@ export default function Home() {
     }
   }
   if (recover) return <PasswordRecovery />;
+  if (resetAccount) return <AccountRecovery close={()=>setResetAccount(false)}/>;
   return (
     <main className="auth">
       <section className="auth-art">
@@ -102,6 +105,7 @@ export default function Home() {
             </button>
           </div>
           <form onSubmit={submit}>
+            {mode==='login'&&<button type="button" onClick={()=>setResetAccount(true)}>Mot de passe oublié ?</button>}
             <label>
               Nom d’utilisateur
               <input

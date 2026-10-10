@@ -1,0 +1,4 @@
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const {newerVersion,allowedUpdateUrl,releaseAssets}=require('../desktop/update-policy.mjs');
+test('update version comparison uses numeric semver',()=>{assert(newerVersion('v0.10.0','0.9.9'));assert(!newerVersion('v0.5.0','0.6.0'));assert(!newerVersion('v0.6.0-beta','0.5.0'));assert(!newerVersion('0.6.0','0.6.0'));});
+test('update download only allows official assets from this repository',()=>{assert(allowedUpdateUrl('https://github.com/younesh95/noctyteamhub/releases/download/v0.6.0/noctysstartbook.exe'));for(const url of ['http://github.com/younesh95/noctyteamhub/releases/download/a','https://github.com.evil.test/younesh95/noctyteamhub/releases/download/a','https://github.com/other/repo/releases/download/a','file:///tmp/setup.exe'])assert(!allowedUpdateUrl(url));assert.throws(()=>releaseAssets({tag_name:'v0.6.0',assets:[]}));});

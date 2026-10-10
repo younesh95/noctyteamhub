@@ -23,6 +23,8 @@ export default function VetoSimulator({
     [busy, setBusy] = useState(false);
   const [bot, setBot] = useState<BotConfig>(defaultBot);
   const [running, setRunning] = useState(false);
+  const [profileId, setProfileId] = useState("");
+  const [recommendations, setRecommendations] = useState<any[]>([]);
   const [decisions, setDecisions] = useState<ReturnType<typeof chooseMap>[]>(
     [],
   );
@@ -40,10 +42,21 @@ export default function VetoSimulator({
         setStatus("");
         setHistory([...history, decision.map]);
         setDecisions([...decisions, decision]);
+        setRecommendations([...recommendations, null]);
       }
     }, 900);
     return () => window.clearTimeout(timer);
-  }, [running, botTurn, error, busy, steps, history, bot, decisions]);
+  }, [
+    running,
+    botTurn,
+    error,
+    busy,
+    steps,
+    history,
+    bot,
+    decisions,
+    recommendations,
+  ]);
   useEffect(() => {
     if (result?.complete) setRunning(false);
   }, [result?.complete]);
@@ -52,6 +65,7 @@ export default function VetoSimulator({
       return;
     setHistory([]);
     setDecisions([]);
+    setRecommendations([]);
     setRunning(false);
     setSides({});
     setStatus("");
@@ -66,7 +80,16 @@ export default function VetoSimulator({
         scope: "team",
         title: title.trim() || "Veto " + format,
         body: "",
-        data: { format, steps, history, teams, sides, bot, decisions },
+        data: {
+          format,
+          steps,
+          history,
+          teams,
+          sides,
+          bot,
+          decisions,
+          recommendations,
+        },
       });
       setStatus(
         ok
@@ -89,6 +112,7 @@ export default function VetoSimulator({
       setSteps(d.steps);
       setHistory(d.history);
       setBot(loadedBot);
+      setRecommendations(d.recommendations || []);
       setDecisions(
         d.history.map((map: string, i: number) => {
           const decision = d.decisions?.[i];
@@ -111,6 +135,79 @@ export default function VetoSimulator({
       <section className="panel">
         <span className="eyebrow">MAP POOL / PRÉPARATION</span>
         <h2>Construisez votre veto</h2>
+        <section className="veto-profile-library">
+          <label>
+            Profil d’adversaire enregistré
+            <select
+              value={profileId}
+              disabled={busy || running || !!history.length}
+              onChange={(e) => {
+                setProfileId(e.target.value);
+                const r = rows.find((r) => r.id === e.target.value);
+                if (r) {
+                  const error = validateBot(r.data.bot, maps);
+                  if (error) {
+                    setStatus(error);
+                    return;
+                  }
+                  setBot(r.data.bot);
+                  setTeams({
+                    A:
+                      typeof r.data.teams?.A === "string"
+                        ? r.data.teams.A
+                        : "NOCTYS",
+                    B:
+                      typeof r.data.teams?.B === "string"
+                        ? r.data.teams.B
+                        : "Adversaire",
+                  });
+                  setStatus("Classements et équipes chargés.");
+                }
+              }}
+            >
+              <option value="">Nouveau profil</option>
+              {rows
+                .filter((r) => r.kind === "veto" && r.data.profileOnly)
+                .map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.title}
+                  </option>
+                ))}
+            </select>
+          </label>
+          {editable && (
+            <button
+              disabled={!!error || busy || running || !!history.length}
+              onClick={async () => {
+                setBusy(true);
+                try {
+                  const old = rows.find((r) => r.id === profileId);
+                  const id = old?.id || crypto.randomUUID();
+                  if (
+                    await save({
+                      ...old,
+                      id,
+                      kind: "veto",
+                      scope: "team",
+                      title: ("Profil · " + teams.B).slice(0, 150),
+                      body: "Classements de préparation du veto",
+                      data: { profileOnly: true, teams, bot },
+                    })
+                  ) {
+                    setProfileId(id);
+                    setStatus(
+                      "Profil enregistré pour vos prochaines simulations.",
+                    );
+                  }
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              {profileId ? "Mettre à jour le profil" : "Enregistrer ce profil"}
+            </button>
+          )}
+        </section>
         <p className="fine">
           Jouez l’équipe A contre le bot qui contrôle l’équipe B. Réglez les
           bans habituels et les forces de chaque équipe ci-dessous avant de
@@ -284,6 +381,10 @@ export default function VetoSimulator({
                   setHistory([...history, map]);
                   setStatus("");
                   setDecisions([...decisions, null]);
+                  setRecommendations([
+                    ...recommendations,
+                    chooseMap(maps, steps, history, bot),
+                  ]);
                 }}
                 className={turn?.action || ""}
               >
@@ -307,6 +408,7 @@ export default function VetoSimulator({
               setHistory(history.slice(0, -1));
               setStatus("");
               setDecisions(decisions.slice(0, -1));
+              setRecommendations(recommendations.slice(0, -1));
               setRunning(false);
               setSides({});
             }}
@@ -329,6 +431,15 @@ export default function VetoSimulator({
               </strong>
               {decisions[i]?.reason && (
                 <small className="fine">Bot · {decisions[i]!.reason}</small>
+              )}
+              {!decisions[i] && recommendations[i] && (
+                <small className="fine">
+                  Comparaison : le bot proposait {recommendations[i].map}
+                  {recommendations[i].map === t.map
+                    ? " · même choix"
+                    : " · choix différent"}
+                  . {recommendations[i].reason}
+                </small>
               )}
             </li>
           ))}
@@ -381,6 +492,7 @@ export default function VetoSimulator({
                 sides,
                 bot,
                 decisions,
+                recommendations,
                 result,
               })
             }
@@ -402,7 +514,7 @@ export default function VetoSimulator({
         </p>
         <h3>Simulations de l’équipe</h3>
         {rows
-          .filter((r) => r.kind === "veto")
+          .filter((r) => r.kind === "veto" && !r.data.profileOnly)
           .map((r) => (
             <button
               disabled={busy}
@@ -410,7 +522,11 @@ export default function VetoSimulator({
               key={r.id}
               onClick={() => load(r)}
             >
-              {r.title} · {r.data.format}
+              {r.title} · {r.data.format} · {r.data.history?.length || 0}/6
+              choix{" "}
+              {r.created_at
+                ? "· " + new Date(r.created_at).toLocaleDateString("fr-FR")
+                : ""}
             </button>
           ))}
       </aside>

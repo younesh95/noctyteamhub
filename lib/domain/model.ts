@@ -9,6 +9,7 @@ export type Row = {
   recipient_id?: string;
   data: any;
   created_at?: string;
+  updated_at?: string;
 };
 /** Pool chosen by NOCTYS, independent of official matchmaking rotations. */
 export const maps = [

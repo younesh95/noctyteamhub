@@ -1,6 +1,10 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { SUPABASE_URL, SUPABASE_KEY, FACEIT_TEAM_ID } from "../../lib/team-connection";
+import {
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  FACEIT_TEAM_ID,
+} from "../../lib/team-connection";
 import {
   Activity,
   BookOpen,
@@ -108,6 +112,29 @@ const demoPlayers = [
   role: i === 4 ? "IGL" : "joueur",
 }));
 const seed: Row[] = [
+  {
+    id: "demo-review-example",
+    kind: "demo",
+    scope: "team",
+    title: "Review d’exemple · Mirage",
+    body: "Fiche de démonstration sans fichier de match. Essayez les remarques et leur conversion en exercices.",
+    map: "Mirage",
+    data: { notes: [] },
+  },
+  {
+    id: "demo-match-example",
+    kind: "event",
+    scope: "team",
+    title: "Entraînement d’exemple",
+    body: "Événement fictif pour préparer une composition.",
+    map: "Mirage",
+    data: {
+      start: "2026-10-01T18:00:00Z",
+      end: "2026-10-01T20:00:00Z",
+      type: "Entraînement",
+      bo: "BO3",
+    },
+  },
   {
     id: "s1",
     kind: "strat",
@@ -310,7 +337,10 @@ export default function Workspace() {
     const token = session()?.access_token;
     if (!token) return;
     const ws = new WebSocket(
-      SUPABASE_URL.replace("https:","wss:") + "/realtime/v1/websocket?apikey=" + encodeURIComponent(SUPABASE_KEY) + "&vsn=1.0.0",
+      SUPABASE_URL.replace("https:", "wss:") +
+        "/realtime/v1/websocket?apikey=" +
+        encodeURIComponent(SUPABASE_KEY) +
+        "&vsn=1.0.0",
     );
     let ref = 1;
     ws.onopen = () =>
@@ -426,13 +456,28 @@ export default function Workspace() {
     }
     if (!me?.active) throw new Error("Accès non validé.");
     await refreshSession();
-    const old = rows.some((r) => r.id === row.id);
+    const old = rows.find((r) => r.id === row.id);
+    const expectedVersion = row.updated_at || old?.updated_at;
     const data = { ...row, owner_id: row.owner_id || me.id };
-    const r = await api("/rest/v1/records" + (old ? "?id=eq." + row.id : ""), {
-      method: old ? "PATCH" : "POST",
-      headers: { Prefer: "return=representation" },
-      body: JSON.stringify(data),
-    });
+    const r = await api(
+      "/rest/v1/records" +
+        (old
+          ? "?id=eq." +
+            row.id +
+            (expectedVersion
+              ? "&updated_at=eq." + encodeURIComponent(expectedVersion)
+              : "")
+          : ""),
+      {
+        method: old ? "PATCH" : "POST",
+        headers: { Prefer: "return=representation" },
+        body: JSON.stringify(data),
+      },
+    );
+    if (!r?.length)
+      throw Error(
+        "Ce contenu a été modifié par un autre membre. Rechargez avant de réessayer pour ne pas écraser sa modification.",
+      );
     setRows((xs) => [r[0], ...xs.filter((x) => x.id !== row.id)]);
     setToast("Enregistré dans Supabase");
   }
@@ -541,14 +586,18 @@ export default function Workspace() {
               <Users size={17} /> Gérer les membres
             </button>
           )}
-          {FACEIT_TEAM_ID && <a
-            className="faceit"
-            href={"https://www.faceit.com/fr/teams/" + FACEIT_TEAM_ID + "/leagues"}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Équipe sur FACEIT <ArrowUpRight size={16} />
-          </a>}
+          {FACEIT_TEAM_ID && (
+            <a
+              className="faceit"
+              href={
+                "https://www.faceit.com/fr/teams/" + FACEIT_TEAM_ID + "/leagues"
+              }
+              target="_blank"
+              rel="noreferrer"
+            >
+              Équipe sur FACEIT <ArrowUpRight size={16} />
+            </a>
+          )}
           <button onClick={() => setModal("Profil")}>
             <span className="avatar">
               {(me?.username || "N").slice(0, 2).toUpperCase()}
@@ -845,7 +894,15 @@ export default function Workspace() {
               </div>
             </>
           ) : view === "Player roles" ? (
-            <Roles rows={rows} players={players} save={save} editable={staff} />
+            <Roles
+              rows={rows}
+              players={players}
+              save={save}
+              editable={staff}
+              me={me}
+              demo={demo}
+              canSchedule={scheduleRights}
+            />
           ) : view.includes("schedule") ? (
             <Schedule
               rows={rows}

@@ -6,6 +6,7 @@ import {
   type TeamConnection,
 } from "../../lib/team-connection";
 import { validateConnection } from "../../desktop/connection-policy.mjs";
+import UpdateNotice from './UpdateNotice';
 export default function ConnectionGate({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false),
     [configured, setConfigured] = useState(false),
@@ -43,7 +44,7 @@ export default function ConnectionGate({ children }: { children: ReactNode }) {
         <section className="panel">Chargement de la configuration…</section>
       </main>
     );
-  if ((configured || demo) && !editing) return children;
+  if ((configured || demo) && !editing) return <>{children}<UpdateNotice/></>;
   return (
     <main
       style={{

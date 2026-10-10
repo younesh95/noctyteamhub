@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Row, maps } from "../../lib/domain/model";
+import MatchLineup from './MatchLineup';
 type Player = { id: string; username: string; role: string };
 type Slot = { id: string; name: string; profileId: string };
 export default function Roles({
@@ -8,11 +9,13 @@ export default function Roles({
   players,
   save,
   editable,
+  me,demo,canSchedule,
 }: {
   rows: Row[];
   players: Player[];
   save: (r: Row) => Promise<boolean>;
   editable: boolean;
+  me:any;demo:boolean;canSchedule:boolean;
 }) {
   const roster = rows.find((r) => r.kind === "roster");
   const accounts = players.filter((p) => ["joueur", "IGL"].includes(p.role));
@@ -144,6 +147,7 @@ export default function Roles({
           {status}
         </p>
       </section>
+      <MatchLineup rows={rows} slots={slots} me={me} demo={demo} save={save} editable={canSchedule} rosterReady={!!roster&&!draft}/>
       {maps.map((map) => {
         const r = rows.find((r) => r.kind === "roles" && r.map === map);
         return (

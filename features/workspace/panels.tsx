@@ -41,6 +41,8 @@ import {
   fileUrl,
 } from "../../lib/supabase";
 import { Row, maps, clock, download } from "../../lib/domain/model";
+import { SPAWNS, isSpawnStrategy, strategyLanes, actionLane } from "../../lib/domain/spawns.mjs";
+import StrategyPad from "../tactical/StrategyPad";
 export function safeUrl(url: string) {
   try {
     const u = new URL(url);
@@ -80,9 +82,11 @@ export function Strategy({
     [actionError, setActionError] = useState(""),
     [actionBusy, setActionBusy] = useState(false);
   const actions = row.data.actions || [];
+  const bySpawn = isSpawnStrategy(row.data);
+  useEffect(()=>{setPlayer("Tous");setSpawn("Tous");setAdding(false);},[row.id,row.data.type]);
   const shown = actions.filter(
     (a: any) =>
-      (player === "Tous" || a.player === player) &&
+      (bySpawn || player === "Tous" || a.player === player) &&
       (spawn === "Tous" || a.spawn === spawn),
   );
   return (
@@ -107,6 +111,7 @@ export function Strategy({
         )}
       </div>
       <p className="strategy-description">{row.body}</p>
+      {bySpawn && <div className="spawn-order" aria-label="Ordre des spawns de gauche à droite"><span>GAUCHE</span>{[...SPAWNS].reverse().map(s=><span className="badge" key={s.id}>{s.name}</span>)}<span>DROITE</span></div>}
       <div className="strategy-toolbar">
         <div className="underline-tabs">
           {["Timeline", "Tactical board"].map((t) => (
@@ -137,7 +142,7 @@ export function Strategy({
         <>
           <div className="timeline-controls">
             <span className="badge">{row.data.type}</span>
-            <select
+            {!bySpawn && <select
               aria-label="Filtrer par joueur"
               value={player}
               onChange={(e) => setPlayer(e.target.value)}
@@ -148,7 +153,7 @@ export function Strategy({
                   {p.username}
                 </option>
               ))}
-            </select>
+            </select>}
             <select
               aria-label="Filtrer par spawn"
               value={spawn}
@@ -163,20 +168,15 @@ export function Strategy({
           <div className="timeline-scroll">
             <div className="timeline">
               <div className="timeline-ruler">
-                <span>JOUEUR</span>
+                <span>{bySpawn ? "SPAWN" : "JOUEUR"}</span>
                 <div>
                   {[135, 115, 95, 75, 55, 35, 5].map((n) => (
                     <span key={n}>{clock(n)}</span>
                   ))}
                 </div>
               </div>
-              {players
-                .filter(
-                  (p) =>
-                    ["joueur", "IGL"].includes(p.role) &&
-                    (player === "Tous" || p.id === player),
-                )
-                .map((p, i) => (
+              {strategyLanes(row.data, players, player, spawn)
+                .map((p:any, i:number) => (
                   <div className="timeline-track" key={p.id}>
                     <div className="track-name">
                       <span className={"player-dot color" + i}>{i + 1}</span>
@@ -185,7 +185,7 @@ export function Strategy({
                     </div>
                     <div className="track-content">
                       {shown
-                        .filter((a: any) => a.player === p.id)
+                        .filter((a: any) => actionLane(row.data,a) === p.id)
                         .map((a: any, j: number) => (
                           <div
                             key={j}
@@ -245,7 +245,7 @@ export function Strategy({
               onSubmit={async (e) => {
                 e.preventDefault();
                 const f = Object.fromEntries(new FormData(e.currentTarget));
-                const a = { ...f, start: +f.start, end: +f.end };
+                const a = { ...f, player: bySpawn ? 'spawn-'+f.spawn : f.player, start: +f.start, end: +f.end };
                 if (a.end > a.start) {
                   setActionError(
                     "La fin doit être inférieure ou égale au début sur une horloge décroissante.",
@@ -268,7 +268,7 @@ export function Strategy({
               }}
             >
               <div className="two">
-                <label>
+                {!bySpawn && <label>
                   Joueur
                   <select name="player" required>
                     {players.map((p) => (
@@ -277,12 +277,12 @@ export function Strategy({
                       </option>
                     ))}
                   </select>
-                </label>
+                </label>}
                 <label>
                   Spawn
                   <select name="spawn">
                     {[1, 2, 3, 4, 5].map((n) => (
-                      <option key={n}>{n}</option>
+                      <option key={n} value={String(n)}>Spawn {n}{n===1?' · le plus à droite':n===5?' · le plus à gauche':''}</option>
                     ))}
                   </select>
                 </label>
@@ -343,7 +343,7 @@ export function Strategy({
                   {a.end !== a.start ? " – " + clock(a.end) : ""}
                 </span>
                 <span className="action-player">
-                  {players.find((p) => p.id === a.player)?.username || "Joueur"}
+                  {bySpawn ? 'Spawn '+actionLane(row.data,a) : players.find((p) => p.id === a.player)?.username || "Joueur"}
                 </span>
                 <span>{a.text}</span>
                 {editable && (
@@ -368,12 +368,7 @@ export function Strategy({
           </div>
         </>
       ) : (
-        <Board
-          map={row.map}
-          points={row.data.points || []}
-          editable={editable}
-          onChange={(points) => save({ ...row, data: { ...row.data, points } })}
-        />
+        <StrategyPad key={row.id} row={row} save={save} editable={editable}/>
       )}
     </section>
   );

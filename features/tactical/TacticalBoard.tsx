@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import { useLiveBoard } from "./useLiveBoard";
 import {
   maps,
   Row,
@@ -34,7 +35,7 @@ const tools = [
 export default function TacticalBoard({
   rows,
   save,
-  editable,
+  editable: canEdit,
   demo,
 }: {
   rows: Row[];
@@ -57,7 +58,47 @@ export default function TacticalBoard({
     [confirm, setConfirm] = useState<Row | null | false>(false),
     [zoom, setZoom] = useState(1);
   const [failedRadar, setFailedRadar] = useState("");
+  const [cursor, setCursor] = useState<Point | null>(null);
+  const [remoteCursor, setRemoteCursor] = useState<Point | null>(null);
+  const localDraft = useRef<{
+    plan: Plan;
+    title: string;
+    time: number;
+    dirty: boolean;
+  } | null>(null);
+  const live = useLiveBoard({ plan, title, time, cursor }, (frame) => {
+    setPlan(frame.plan);
+    setTitle(frame.title);
+    setTime(frame.time);
+    setRemoteCursor(frame.cursor);
+  });
+  const editable = canEdit && live.mode !== "follow";
+  useEffect(() => {
+    if (live.mode !== "follow" && localDraft.current) {
+      const d = localDraft.current;
+      localDraft.current = null;
+      setPlan(d.plan);
+      setTitle(d.title);
+      setTime(d.time);
+      setDirty(d.dirty);
+      setRemoteCursor(null);
+    }
+  }, [live.mode]);
   const revision = useRef(0);
+  const recordVersion = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    const r = rows.find((r) => r.id === id);
+    if (
+      r &&
+      !dirty &&
+      live.mode !== "follow" &&
+      r.updated_at !== recordVersion.current
+    ) {
+      recordVersion.current = r.updated_at;
+      setPlan({ ...initial, ...r.data, map: r.map || "Mirage" });
+      setTitle(r.title);
+    }
+  }, [rows, id, dirty, live.mode]);
   const svg = useRef<SVGSVGElement>(null),
     gesture = useRef<{
       before: Plan;
@@ -80,6 +121,7 @@ export default function TacticalBoard({
     setStatus("Modifications non enregistrées");
   }
   function open(row: Row | null) {
+    if (live.mode === "follow") return;
     if (busy) return;
     if (dirty) {
       setConfirm(row);
@@ -88,6 +130,7 @@ export default function TacticalBoard({
     load(row);
   }
   function load(row: Row | null) {
+    recordVersion.current = row?.updated_at;
     revision.current++;
     setId(row?.id || "");
     setTitle(row?.title || "Nouveau plan");
@@ -161,6 +204,7 @@ export default function TacticalBoard({
     } else change({ ...plan, marks: [...plan.marks, m] });
   }
   function move(e: React.PointerEvent<SVGSVGElement>) {
+    if (live.mode === "present") setCursor(point(e));
     const g = gesture.current;
     if (!g) return;
     const p = point(e);
@@ -228,6 +272,38 @@ export default function TacticalBoard({
       <aside className="panel board-library">
         <span className="eyebrow">PLAYBOOK / TABLEAUX</span>
         <h3>Plans de l’équipe</h3>
+        <div className="live-controls">
+          <h4>Présentation en direct</h4>
+          {live.mode === "off" ? (
+            <>
+              {canEdit && (
+                <button disabled={demo} onClick={() => live.setMode("present")}>
+                  Présenter mon tableau
+                </button>
+              )}
+              <button
+                disabled={demo}
+                onClick={() => {
+                  localDraft.current = { plan, title, time, dirty };
+                  setDirty(false);
+                  live.setMode("follow");
+                }}
+              >
+                Suivre le présentateur
+              </button>
+            </>
+          ) : (
+            <button onClick={() => live.setMode("off")}>
+              Quitter le direct
+            </button>
+          )}
+          <p role="status" className="fine">
+            {demo
+              ? "Connexion réelle requise pour le direct."
+              : live.message ||
+                "Un présentateur à la fois. Les dessins restent à enregistrer dans la bibliothèque."}
+          </p>
+        </div>
         {editable && (
           <button className="primary" onClick={() => open(null)}>
             ＋ Nouveau tableau
@@ -236,6 +312,7 @@ export default function TacticalBoard({
         {boards.map((r) => (
           <button
             key={r.id}
+            disabled={live.mode === "follow"}
             className={id === r.id ? "selected" : ""}
             onClick={() => open(r)}
           >
@@ -277,8 +354,19 @@ export default function TacticalBoard({
               value={plan.map}
               disabled={!editable}
               onChange={(e) => {
-                if (plan.marks.length && !window.confirm('Changer de map effacera les annotations de ce plan. Continuer ?')) return;
-                change({ ...plan, map: e.target.value, level: "upper", marks: [] });
+                if (
+                  plan.marks.length &&
+                  !window.confirm(
+                    "Changer de map effacera les annotations de ce plan. Continuer ?",
+                  )
+                )
+                  return;
+                change({
+                  ...plan,
+                  map: e.target.value,
+                  level: "upper",
+                  marks: [],
+                });
               }}
             >
               {maps.map((m) => (
@@ -302,6 +390,7 @@ export default function TacticalBoard({
               Niveau
               <select
                 value={plan.level}
+                disabled={live.mode === "follow"}
                 onChange={(e) => setPlan({ ...plan, level: e.target.value })}
               >
                 <option value="upper">Supérieur</option>
@@ -344,6 +433,7 @@ export default function TacticalBoard({
             Timing {clock(time)}
             <input
               type="range"
+              disabled={live.mode === "follow"}
               min="5"
               max="135"
               value={time}
@@ -389,7 +479,13 @@ export default function TacticalBoard({
               </marker>
             </defs>
             <rect width="1000" height="1000" fill="#0a0e16" />
-            <image href={background} width="1000" height="1000" onError={()=>setFailedRadar(background)} onLoad={()=>setFailedRadar('')}/>
+            <image
+              href={background}
+              width="1000"
+              height="1000"
+              onError={() => setFailedRadar(background)}
+              onLoad={() => setFailedRadar("")}
+            />
             {plan.marks
               .filter((m) => m.level === plan.level)
               .map((m) => (
@@ -455,9 +551,34 @@ export default function TacticalBoard({
                   </text>
                 </g>
               ))}
+            {live.mode === "follow" && remoteCursor && (
+              <g pointerEvents="none">
+                <circle
+                  cx={remoteCursor.x}
+                  cy={remoteCursor.y}
+                  r="14"
+                  fill="#d3bbff"
+                  stroke="white"
+                  strokeWidth="3"
+                />
+                <text
+                  x={remoteCursor.x + 20}
+                  y={remoteCursor.y}
+                  fill="white"
+                  fontSize="20"
+                >
+                  Coach
+                </text>
+              </g>
+            )}
           </svg>
         </div>
-        {failedRadar === background && <p role="alert">Le radar {plan.map} n’a pas pu être chargé. Réinstallez la dernière version de NOCTYS.</p>}
+        {failedRadar === background && (
+          <p role="alert">
+            Le radar {plan.map} n’a pas pu être chargé. Réinstallez la dernière
+            version de NOCTYS.
+          </p>
+        )}
         <div className="board-actions">
           <button
             disabled={!past.length || !editable}
@@ -499,6 +620,7 @@ export default function TacticalBoard({
                 try {
                   const ok = await save({
                     ...row,
+                    updated_at: recordVersion.current,
                     id: nextId,
                     kind: "board",
                     scope: "team",
@@ -511,9 +633,11 @@ export default function TacticalBoard({
                     setId(nextId);
                     setDirty(revision.current !== savingRevision);
                     setStatus(
-                      revision.current !== savingRevision ? 'Plan enregistré. Des modifications plus récentes restent à sauvegarder.' : demo
-                        ? "Plan sauvegardé pour cette démonstration."
-                        : "Plan partagé enregistré.",
+                      revision.current !== savingRevision
+                        ? "Plan enregistré. Des modifications plus récentes restent à sauvegarder."
+                        : demo
+                          ? "Plan sauvegardé pour cette démonstration."
+                          : "Plan partagé enregistré.",
                     );
                   } else
                     setStatus(

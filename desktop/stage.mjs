@@ -5,7 +5,7 @@ const staging=resolve('desktop-package');
 if(dirname(staging)!==process.cwd()||basename(staging)!=='desktop-package')throw Error('Invalid staging directory');
 rmSync(staging,{recursive:true,force:true});
 mkdirSync('desktop-package/desktop',{recursive:true});
-for(const name of ['main.cjs','preload.cjs','faceit-policy.cjs','diagnostics.cjs','call-policy.cjs','connection-policy.mjs'])cpSync('desktop/'+name,'desktop-package/desktop/'+name);
+for(const name of ['main.cjs','preload.cjs','faceit-policy.cjs','diagnostics.cjs','call-policy.cjs','connection-policy.mjs','updates.cjs','update-policy.mjs'])cpSync('desktop/'+name,'desktop-package/desktop/'+name);
 cpSync('desktop-renderer','desktop-package/desktop-renderer',{recursive:true});
 const {name,version,description,author,main}=JSON.parse(readFileSync('package.json','utf8'));
 writeFileSync('desktop-package/package.json',JSON.stringify({name,version,description,author,main},null,2));

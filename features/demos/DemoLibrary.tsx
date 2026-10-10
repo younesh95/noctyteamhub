@@ -9,7 +9,7 @@ import {
   SUPABASE_URL,
   fileUrl,
 } from "../../lib/supabase";
-import { Notes } from "../workspace/panels";
+import Notes from "./ReviewNotes";
 export default function DemoLibrary({
   rows,
   players,
@@ -282,6 +282,7 @@ export default function DemoLibrary({
             )}
             <Notes
               row={row}
+              rows={rows}
               players={players}
               save={save}
               editable={editable}
